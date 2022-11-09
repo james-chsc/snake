@@ -8,7 +8,7 @@ pygame.display.set_caption('Hello World:)')
 window_surface.fill( (255, 125, 125) )
 
 # 設定字型和大小
-font微軟正黑體60pt = pygame.font.Font('msjh.ttc', 60)
+font微軟正黑體60pt = pygame.font.Font('./fonts/msjh.ttc', 60)
 # 用設定好的字型大小渲染「Hello World!」
 text_surface = font微軟正黑體60pt.render('Hello World! 大家好', True, (0, 0, 255), (0,255,0))
 
