@@ -1,13 +1,11 @@
 import pygame, sys, time, random
 import pygame.event as event
-from pygame.locals import *
 
 # 定義頻色變數
 redColour = pygame.Color(255, 0, 0)
 blackColour = pygame.Color(0, 0, 0)
 whiteColour = pygame.Color(255, 255, 255)
 greyColour = pygame.Color(150, 150, 150)
-
 
 def gameOver(playSurface, score):
     txtFont = pygame.font.SysFont('arial.ttf', 54)
@@ -22,9 +20,9 @@ def gameOver(playSurface, score):
     txtRect.midtop = (playSurface.get_rect().centerx, txtFont.get_height() )
     playSurface.blit(txtSurf, txtRect)
     
-    pygame.display.flip()
+    pygame.display.update()
     
-    time.sleep(5)
+    time.sleep(2)
     pygame.quit()
     sys.exit()
 
@@ -43,9 +41,8 @@ def main():
     snakePosition = [100, 100]  # 貪吃蛇 蛇頭的位置
     snakeSegments = [snakePosition]  # 貪吃蛇 蛇的身體，初始為一個單位
     raspberryPosition = [300, 300]  # 樹莓的初始位置
-    raspberrySpawned = 1  # 樹莓的個數為1
-    direction = 'right'  # 初始方向為右
-    changeDirection = direction
+    direction = '右'  # 初始方向為右
+    changeDirection = ''    # 下一個方向
     score = 0  # 初始得分
     
     while True:
@@ -80,48 +77,46 @@ def main():
             direction = changeDirection
         
         # 根據方向移動蛇頭的座標
-        if direction == 'right':
+        if direction == '右':
             snakePosition[0] += 20
-        if direction == 'left':
+        elif direction == '左':
             snakePosition[0] -= 20
-        if direction == 'up':
-            snakePosition[1] -= 20
-        if direction == 'down':
+        elif direction == '下':
             snakePosition[1] += 20
+        else:  # direction == '上':
+            snakePosition[1] -= 20
         
         # 增加蛇的長度
         snakeSegments.insert(0, list(snakePosition))
         
         # 判斷是否吃掉了樹莓
-        if snakePosition[0] == raspberryPosition[0] and snakePosition[1] == raspberryPosition[1]:
-            raspberrySpawned = 0
-        else:
-            snakeSegments.pop()
-        
-        # 如果吃掉樹莓，則重新生成樹莓
-        if raspberrySpawned == 0:
+        if snakePosition != raspberryPosition:
+            snakeSegments.pop() # 刪掉尾巴
+
+        else:   # 如果吃掉樹莓，則重新生成樹莓
             x = random.randrange(1, 30)
             y = random.randrange(1, 23)
             raspberryPosition = [int(x * 20), int(y * 20)]
-            raspberrySpawned = 1
             score += 1
         
         # 繪製pygame顯示層
         playSurface.fill(blackColour)
         for position in snakeSegments:
-            pygame.draw.rect(playSurface, whiteColour, Rect(position[0], position[1], 20, 20))
-            pygame.draw.rect(playSurface, redColour, Rect(raspberryPosition[0], raspberryPosition[1], 20, 20))
+            pygame.draw.rect(playSurface, whiteColour, 
+                pygame.Rect(position[0], position[1], 20, 20))
+            pygame.draw.rect(playSurface, redColour, 
+                pygame.Rect(raspberryPosition[0], raspberryPosition[1], 20, 20))
         
         # 刷新pygame顯示層
-        pygame.display.flip()
+        pygame.display.update()
         
         # 判斷是否死亡
         if snakePosition[0] > 600 or snakePosition[0] < 0:
             gameOver(playSurface, score)
         if snakePosition[1] > 460 or snakePosition[1] < 0:
             gameOver(playSurface, score)
-        for snakeBody in snakeSegments[1:]:
-            if snakePosition[0] == snakeBody[0] and snakePosition[1] == snakeBody[1]:
+        for seg in snakeSegments[1:]:
+            if snakePosition == seg:    # 吃到自己身體
                 gameOver(playSurface, score)
         
         # 控制遊戲速度
