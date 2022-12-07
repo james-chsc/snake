@@ -94,8 +94,8 @@ def main():
             snakeSegments.pop() # 刪掉尾巴
 
         else:   # 如果吃掉樹莓，則重新生成樹莓
-            x = random.randrange(1, 30)
-            y = random.randrange(1, 23)
+            x = random.randrange(0, 30)
+            y = random.randrange(0, 23)
             raspberryPosition = [int(x * 20), int(y * 20)]
             score += 1
         
@@ -120,7 +120,7 @@ def main():
                 gameOver(playSurface, score)
         
         # 控制遊戲速度
-        fpsClock.tick(5)
+        fpsClock.tick(7)
 
 
 if __name__ == "__main__":
