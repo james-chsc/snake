@@ -55,27 +55,17 @@ def main():
         
             elif e.type == pygame.KEYDOWN:
                 # 判斷鍵盤事件
-                if e.key == pygame.K_RIGHT:
-                    changeDirection = '右'
-                if e.key == pygame.K_LEFT:
-                    changeDirection = '左'
-                if e.key == pygame.K_UP:
-                    changeDirection = '上'
-                if e.key == pygame.K_DOWN:
-                    changeDirection = '下'
+                if e.key == pygame.K_RIGHT and direction in '上下':
+                    direction = '右'
+                if e.key == pygame.K_LEFT and direction in '上下':
+                    direction = '左'
+                if e.key == pygame.K_UP and direction in '左右':
+                    direction = '上'
+                if e.key == pygame.K_DOWN and direction in '左右':
+                    direction = '下'
                 if e.key == pygame.K_ESCAPE:
                     event.post(event.Event(pygame.QUIT))
-        
-        # 判斷是否輸入了反方向
-        if changeDirection == '右' and not direction == '左':
-            direction = changeDirection
-        if changeDirection == '左' and not direction == '右':
-            direction = changeDirection
-        if changeDirection == '上' and not direction == '下':
-            direction = changeDirection
-        if changeDirection == '下' and not direction == '上':
-            direction = changeDirection
-        
+                
         # 根據方向移動蛇頭的座標
         if direction == '右':
             snakePosition[0] += 20
@@ -96,28 +86,33 @@ def main():
         else:   # 如果吃掉樹莓，則重新生成樹莓
             x = random.randrange(0, 30)
             y = random.randrange(0, 23)
-            raspberryPosition = [int(x * 20), int(y * 20)]
+            raspberryPosition = [x * 20, y * 20]
             score += 1
         
-        # 繪製pygame顯示層
+        # 清空、重繪pygame顯示層
         playSurface.fill(blackColour)
-        for position in snakeSegments:
-            pygame.draw.rect(playSurface, whiteColour, 
-                pygame.Rect(position[0], position[1], 20, 20))
-            pygame.draw.rect(playSurface, redColour, 
-                pygame.Rect(raspberryPosition[0], raspberryPosition[1], 20, 20))
+
+        # 重繪身體
+        for seg in snakeSegments:
+            pygame.draw.rect(playSurface, whiteColour, pygame.Rect(seg[0], seg[1], 20, 20))
+        
+        # 重繪樹莓
+        pygame.draw.rect(playSurface, redColour, pygame.Rect(raspberryPosition[0], raspberryPosition[1], 20, 20))
         
         # 刷新pygame顯示層
         pygame.display.update()
         
         # 判斷是否死亡
-        if snakePosition[0] > 600 or snakePosition[0] < 0:
+        if snakePosition[0] > 600 or snakePosition[0] < 0:  # X軸有沒有超出視窗
             gameOver(playSurface, score)
-        if snakePosition[1] > 460 or snakePosition[1] < 0:
+        
+        elif snakePosition[1] > 460 or snakePosition[1] < 0:    # Y軸有沒有超出視窗
             gameOver(playSurface, score)
-        for seg in snakeSegments[1:]:
-            if snakePosition == seg:    # 吃到自己身體
-                gameOver(playSurface, score)
+        
+        else:   # 是否吃到自己身體
+            for seg in snakeSegments[1:]:
+                if snakePosition == seg:    
+                    gameOver(playSurface, score)
         
         # 控制遊戲速度
         fpsClock.tick(7)

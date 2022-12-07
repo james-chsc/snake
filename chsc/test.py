@@ -1,3 +1,2 @@
-print("Hello Python")
-print("hi")
-print("可以了")
+d='左'
+print(d in '上下')
