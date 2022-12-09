@@ -38,9 +38,9 @@ def main():
     pygame.display.set_caption('Snake Game')
     
     # 初始化變數
-    snakePosition = [100, 100]  # 貪吃蛇 蛇頭的位置
+    snakePosition = (100, 100)  # 貪吃蛇 蛇頭的位置
     snakeSegments = [snakePosition]  # 貪吃蛇 蛇的身體，初始為一個單位
-    raspberryPosition = [300, 300]  # 樹莓的初始位置
+    raspberryPosition = (300, 300)  # 樹莓的初始位置
     direction = '右'  # 初始方向為右
     changeDirection = ''    # 下一個方向
     score = 0  # 初始得分
@@ -67,26 +67,27 @@ def main():
                     event.post(event.Event(pygame.QUIT))
                 
         # 根據方向移動蛇頭的座標
+        (x, y) = snakePosition
         if direction == '右':
-            snakePosition[0] += 20
+            snakePosition = (x+20, y)
         elif direction == '左':
-            snakePosition[0] -= 20
+            snakePosition = (x-20, y)
         elif direction == '下':
-            snakePosition[1] += 20
+            snakePosition = (x, y+20)
         else:  # direction == '上':
-            snakePosition[1] -= 20
+            snakePosition = (x, y-20)
         
         # 增加蛇的長度
-        snakeSegments.insert(0, list(snakePosition))
+        snakeSegments.insert(0, snakePosition)
         
         # 判斷是否吃掉了樹莓
-        if snakePosition != raspberryPosition:
-            snakeSegments.pop() # 刪掉尾巴
+        if snakePosition != raspberryPosition:  # 如果沒有吃到樹莓
+            snakeSegments.pop() # 就把身體的最後一節(尾巴)刪掉
 
         else:   # 如果吃掉樹莓，則重新生成樹莓
-            x = random.randrange(0, 30)
-            y = random.randrange(0, 23)
-            raspberryPosition = [x * 20, y * 20]
+            x = random.randrange(0, 30) * 20
+            y = random.randrange(0, 23) * 20
+            raspberryPosition = (x, y)
             score += 1
         
         # 清空、重繪pygame顯示層
