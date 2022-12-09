@@ -42,7 +42,6 @@ def main():
     snakeSegments = [snakePosition]  # 貪吃蛇 蛇的身體，初始為一個單位
     raspberryPosition = (300, 300)  # 樹莓的初始位置
     direction = '右'  # 初始方向為右
-    changeDirection = ''    # 下一個方向
     score = 0  # 初始得分
     
     while True:
