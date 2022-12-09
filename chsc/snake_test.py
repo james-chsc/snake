@@ -1,5 +1,6 @@
-import pygame as pg
 import random
+
+import pygame
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -12,18 +13,18 @@ WINDOW_W = 800
 WINDOW_H = 600
 BLOCK_SIZE = 25
 
-pg.init()
-pg.mixer.init() # 進階設計：遊戲聲音控制
-gameDisplay = pg.display.set_mode((WINDOW_W, WINDOW_H))
-pg.display.set_caption("Snake")
+pygame.init()
+pygame.mixer.init() # 進階設計：遊戲聲音控制
+gameDisplay = pygame.display.set_mode((WINDOW_W, WINDOW_H))
+pygame.display.set_caption("Snake")
 
-clock = pg.time.Clock()
+clock = pygame.time.Clock()
 FPS = 5
 
-font = pg.font.SysFont(None, 40)
-font_title = pg.font.SysFont(None, 60)
-target = pg.image.load("target.png")
-target = pg.transform.scale(target, (BLOCK_SIZE, BLOCK_SIZE))
+font = pygame.font.SysFont(None, 40)
+font_title = pygame.font.SysFont(None, 60)
+target = pygame.image.load("target.png")
+target = pygame.transform.scale(target, (BLOCK_SIZE, BLOCK_SIZE))
 
 
 #------------------------------------------------------------------------------------
@@ -32,14 +33,13 @@ def draw_snake(snake_loc_list):
     '''將蛇的方塊座標繪製到畫面上'''
     head_x = snake_loc_list[-1][0]
     head_y = snake_loc_list[-1][1]
-    pg.draw.rect(gameDisplay, red, [head_x, head_y, BLOCK_SIZE, BLOCK_SIZE])
+    pygame.draw.rect(gameDisplay, red, [head_x, head_y, BLOCK_SIZE, BLOCK_SIZE])
     for [body_x, body_y] in snake_loc_list[:-1]:
-        pg.draw.rect(gameDisplay, purple, [body_x, body_y, BLOCK_SIZE, BLOCK_SIZE])
+        pygame.draw.rect(gameDisplay, purple, [body_x, body_y, BLOCK_SIZE, BLOCK_SIZE])
 
 def draw_target(target_x, target_y):
     '''功能：將食物座標繪製到畫面上'''
     gameDisplay.blit(target, [target_x, target_y])
-
 
 def msg_to_screen(msg, color, x, y, isTitle=False):
     '''功能：將文字訊息顯示在畫面上'''
@@ -65,18 +65,18 @@ def unpause():
 def paused():
     '''進階設計：遊戲暫停'''
     while pause:
-        msg_to_screen("Pause,Press C to countinue.",white, WINDOW_W / 2, WINDOW_H / 2, True)
-        pg.mixer.music.pause()
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                pg.quit()
+        msg_to_screen("Pause,Press C to countinue.", white, WINDOW_W / 2, WINDOW_H / 2, True)
+        pygame.mixer.music.pause()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
                 quit()
-        pg.display.update()
-        for event in pg.event.get():# 遊戲繼續
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_c:
+        pygame.display.update()
+        for event in pygame.event.get():# 遊戲繼續
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_c:
                     unpause()
-        pg.mixer.music.unpause()
+        pygame.mixer.music.unpause()
         
 #-----------------------------------------------------------------------------
 
@@ -94,10 +94,10 @@ def game_loop():
     snake_loc_list = []
     snake_len = 1
     score = 0
-    pg.mixer.music.load("main_theme.ogg") #背景音樂
-    pg.mixer.music.play(-1) 
-    death = pg.mixer.Sound("death.wav") #遊戲結束音效
-    got = pg.mixer.Sound("coin.ogg") #吃到食物音效
+    pygame.mixer.music.load("main_theme.ogg") #背景音樂
+    pygame.mixer.music.play(-1) 
+    death = pygame.mixer.Sound("death.wav") #遊戲結束音效
+    got = pygame.mixer.Sound("coin.ogg") #吃到食物音效
     #功能：隨機產生目標（食物）位置
     target_x, target_y = generate_rand_target_loc(rand_x, rand_y)
     
@@ -105,44 +105,44 @@ def game_loop():
         
         # 遊戲結束（重新開始）畫面
         while game_over == True:
-            pg.mixer.music.stop()
+            pygame.mixer.music.stop()
             gameDisplay.fill(red)
             msg_to_screen("Died! Press R to restart or Q to quit.",white, WINDOW_W / 2, WINDOW_H / 2, True)
             msg_to_screen(f"Score: {score}", white, WINDOW_W / 2, WINDOW_H / 3)
-            for event in pg.event.get():
-                if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_r:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
                         game_loop()
-                    if event.key == pg.K_q:
+                    if event.key == pygame.K_q:
                         game_exit = True
                         game_over = False
-                elif event.type == pg.QUIT:
+                elif event.type == pygame.QUIT:
                     game_exit = True
                     game_over = False
-            pg.display.update()
+            pygame.display.update()
         # 遊戲暫停
         while pause:
             paused()
 
         # 遊戲進行畫面—
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 game_exit = True
             #偵測到按鍵按下事件
-            elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_LEFT:
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
                     head_x_change = -BLOCK_SIZE
                     head_y_change = 0
-                if event.key == pg.K_RIGHT:
+                if event.key == pygame.K_RIGHT:
                     head_x_change = BLOCK_SIZE
                     head_y_change = 0
-                if event.key == pg.K_UP:
+                if event.key == pygame.K_UP:
                     head_x_change = 0
                     head_y_change = -BLOCK_SIZE
-                if event.key == pg.K_DOWN:
+                if event.key == pygame.K_DOWN:
                     head_x_change = 0
                     head_y_change = BLOCK_SIZE
-                if event.key == pg.K_p:
+                if event.key == pygame.K_p:
                     pause = True
 
         #head_x_change = BLOCK_SIZE # 測試蛇是可以正確移動的，開始製作專案時請將本行刪除
@@ -186,9 +186,9 @@ def game_loop():
         msg_to_screen(f"Score: {score}", white, 60, 20)
         draw_snake(snake_loc_list)
         draw_target(target_x, target_y)
-        pg.display.update()# 畫面更新
+        pygame.display.update()# 畫面更新
         clock.tick(FPS)
 
-    pg.quit()
+    pygame.quit()
 
 game_loop()
