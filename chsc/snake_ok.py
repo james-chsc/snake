@@ -65,7 +65,7 @@ def main():
                 if e.key == pygame.K_ESCAPE:
                     event.post(event.Event(pygame.QUIT))
                 
-        # 根據方向移動蛇頭的座標
+        # 根據方向來設定(移動)新蛇頭的座標
         (x, y) = snakePosition
         if direction == '右':
             snakePosition = (x+20, y)
