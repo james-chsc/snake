@@ -1,6 +1,5 @@
-import random
-
 import pygame
+import sys, random
 
 white = (255, 255, 255)
 black = (0, 0, 0)
@@ -23,7 +22,7 @@ FPS = 5
 
 font = pygame.font.SysFont(None, 40)
 font_title = pygame.font.SysFont(None, 60)
-target = pygame.image.load("target.png")
+target = pygame.image.load("chsc/assets/target.png")
 target = pygame.transform.scale(target, (BLOCK_SIZE, BLOCK_SIZE))
 
 
@@ -40,6 +39,7 @@ def draw_snake(snake_loc_list):
 def draw_target(target_x, target_y):
     '''功能：將食物座標繪製到畫面上'''
     gameDisplay.blit(target, [target_x, target_y])
+
 
 def msg_to_screen(msg, color, x, y, isTitle=False):
     '''功能：將文字訊息顯示在畫面上'''
@@ -65,17 +65,17 @@ def unpause():
 def paused():
     '''進階設計：遊戲暫停'''
     while pause:
-        msg_to_screen("Pause,Press C to countinue.", white, WINDOW_W / 2, WINDOW_H / 2, True)
+        msg_to_screen("Pause,Press C to countinue.",white, WINDOW_W / 2, WINDOW_H / 2, True)
         pygame.mixer.music.pause()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                unpause()   # 遊戲繼續
+        
         pygame.display.update()
-        for event in pygame.event.get():# 遊戲繼續
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_c:
-                    unpause()
         pygame.mixer.music.unpause()
         
 #-----------------------------------------------------------------------------
@@ -94,10 +94,11 @@ def game_loop():
     snake_loc_list = []
     snake_len = 1
     score = 0
-    pygame.mixer.music.load("main_theme.ogg") #背景音樂
+
+    pygame.mixer.music.load("chsc/assets/main_theme.ogg") #背景音樂
     pygame.mixer.music.play(-1) 
-    death = pygame.mixer.Sound("death.wav") #遊戲結束音效
-    got = pygame.mixer.Sound("coin.ogg") #吃到食物音效
+    death = pygame.mixer.Sound("chsc/assets/death.wav") #遊戲結束音效
+    got = pygame.mixer.Sound("chsc/assets/coin.ogg") #吃到食物音效
     #功能：隨機產生目標（食物）位置
     target_x, target_y = generate_rand_target_loc(rand_x, rand_y)
     
@@ -105,6 +106,7 @@ def game_loop():
         
         # 遊戲結束（重新開始）畫面
         while game_over == True:
+            death.play()
             pygame.mixer.music.stop()
             gameDisplay.fill(red)
             msg_to_screen("Died! Press R to restart or Q to quit.",white, WINDOW_W / 2, WINDOW_H / 2, True)
@@ -120,6 +122,7 @@ def game_loop():
                     game_exit = True
                     game_over = False
             pygame.display.update()
+        
         # 遊戲暫停
         while pause:
             paused()
@@ -147,20 +150,25 @@ def game_loop():
 
         #head_x_change = BLOCK_SIZE # 測試蛇是可以正確移動的，開始製作專案時請將本行刪除
         head_x += head_x_change
-        head_y += head_y_change 
+        head_y += head_y_change
         # 更新蛇各節點位置               
         snake_loc_list.append((head_x, head_y))
         while len(snake_loc_list) > snake_len:
             snake_loc_list.remove(snake_loc_list[0])
         #print("snake_len:", snake_len, "\nsnake_loc_list:", snake_loc_list) #偵錯用
         
+        # 食物偵測
+        if head_x == target_x and head_y == target_y:
+            got.play()
+            target_x, target_y = generate_rand_target_loc(rand_x, rand_y)
+            snake_len += 1
+            score += 1
+
         # 邊界碰撞偵測
-        if head_x >= WINDOW_W or head_x < 0:
+        if not (0 <= head_x < WINDOW_W and 
+                0 <= head_y < WINDOW_H):
             game_over = True
-            death.play()
-        if head_y >= WINDOW_H or head_y < 0:
-            game_over = True
-            death.play()
+
         # 進階設計:穿牆
         # if head_x >= WINDOW_W:
         #     head_x = -BLOCK_SIZE
@@ -170,23 +178,21 @@ def game_loop():
         #     head_y = -BLOCK_SIZE
         # elif head_y < 0:
         #     head_y = WINDOW_H
+        
         # 身體重疊偵測        
         for i in range(snake_len-2):
             if snake_loc_list[i] == snake_loc_list[-1]:
                 game_over = True
                 death.play()
-        # 食物偵測
-        if head_x == target_x and head_y == target_y:
-            got.play()
-            target_x, target_y = generate_rand_target_loc(rand_x, rand_y)
-            snake_len += 1
-            score += 1
 
         gameDisplay.fill(black)
         msg_to_screen(f"Score: {score}", white, 60, 20)
         draw_snake(snake_loc_list)
         draw_target(target_x, target_y)
         pygame.display.update()# 畫面更新
+
+
+
         clock.tick(FPS)
 
     pygame.quit()
