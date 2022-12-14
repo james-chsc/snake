@@ -11,3 +11,7 @@ snake.head = region.get_rnd_point()
 
 snake.go(dir="R")
 if snake.is_die(): pass
+
+
+pass
+pass

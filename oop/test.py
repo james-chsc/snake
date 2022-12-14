@@ -1,3 +1,7 @@
+aaa = 1
+bbb = 2
+
+
 def fn():
     global a
     print('fn():',a)
